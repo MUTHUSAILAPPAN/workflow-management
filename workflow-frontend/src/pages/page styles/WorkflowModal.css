@@ -1,0 +1,389 @@
+/* WorkflowModal.css */
+.workflow-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .workflow-modal-card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    width: 80%;
+    max-width: 700px;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: modalFadeIn 0.3s ease-out;
+  }
+  
+  @keyframes modalFadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .modal-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid #eaeaea;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    background-color: #fff;
+    border-radius: 8px 8px 0 0;
+    z-index: 1;
+  }
+  
+  .modal-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #333;
+  }
+  
+  .close-btn {
+    background: none;
+    border: none;
+    font-size: 1.8rem;
+    cursor: pointer;
+    color: #777;
+    transition: color 0.2s;
+  }
+  
+  .close-btn:hover {
+    color: #333;
+  }
+  
+  .modal-content {
+    padding: 20px;
+  }
+  
+  .detail-section {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .workflow-title {
+    margin: 0 0 10px 0;
+    font-size: 1.3rem;
+    color: #2c3e50;
+  }
+  
+  .status-section {
+    margin-bottom: 12px;
+  }
+  
+  .status-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 16px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-transform: lowercase;
+  }
+  
+  .status-badge::first-letter {
+    text-transform: uppercase;
+  }
+  
+  /* Status badge colors */
+  .status-badge.pending {
+    background-color: #fff8e6;
+    color: #b78105;
+  }
+  
+  .status-badge.in_progress {
+    background-color: #e6f7ff;
+    color: #0c6db3;
+  }
+  
+  .status-badge.completed {
+    background-color: #e6ffed;
+    color: #0c8050;
+  }
+  
+  .status-badge.cancelled {
+    background-color: #fff1f0;
+    color: #cf1322;
+  }
+  
+  .status-badge.unknown {
+    background-color: #f5f5f5;
+    color: #595959;
+  }
+  
+  .description-section h4 {
+    margin: 0 0 8px 0;
+    font-size: 1rem;
+    color: #595959;
+  }
+  
+  .workflow-description {
+    margin: 0;
+    line-height: 1.5;
+    color: #333;
+    white-space: pre-wrap;
+  }
+  
+  .assignments, .dates {
+    border-top: 1px solid #eaeaea;
+    padding-top: 12px;
+    margin-top: 8px;
+  }
+  
+  .detail-row {
+    display: flex;
+    margin-bottom: 8px;
+  }
+  
+  .detail-label {
+    font-weight: 500;
+    color: #595959;
+    width: 120px;
+    flex-shrink: 0;
+  }
+  
+  .detail-value {
+    color: #333;
+  }
+  
+  .comments-section {
+    border-top: 1px solid #eaeaea;
+    padding-top: 16px;
+    margin-top: 8px;
+  }
+  
+  .comments-section h4 {
+    margin: 0 0 12px 0;
+    font-size: 1rem;
+    color: #595959;
+  }
+  
+  .comments-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .comment-item {
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #f9f9f9;
+    border-radius: 4px;
+  }
+  
+  .comment-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+  }
+  
+  .comment-author {
+    font-weight: 500;
+    color: #333;
+  }
+  
+  .comment-date {
+    font-size: 0.85rem;
+    color: #888;
+  }
+  
+  .comment-text {
+    margin: 0;
+    color: #333;
+  }
+  
+  .modal-footer {
+    padding: 16px 20px;
+    border-top: 1px solid #eaeaea;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    position: sticky;
+    bottom: 0;
+    background-color: #fff;
+    border-radius: 0 0 8px 8px;
+  }
+  
+  /* Form styling */
+  .workflow-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  
+  .form-group label {
+    font-weight: 500;
+    color: #333;
+  }
+  
+  .required {
+    color: #f56c6c;
+  }
+  
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    padding: 10px;
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+  }
+  
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus {
+    border-color: #1890ff;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+  }
+  
+  .form-group input:disabled,
+  .form-group select:disabled,
+  .form-group textarea:disabled {
+    background-color: #f5f5f5;
+    cursor: not-allowed;
+  }
+  
+  /* Buttons */
+  .primary-btn, .secondary-btn {
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .primary-btn {
+    background-color: #1890ff;
+    border: 1px solid #1890ff;
+    color: white;
+  }
+  
+  .primary-btn:hover {
+    background-color: #40a9ff;
+    border-color: #40a9ff;
+  }
+  
+  .secondary-btn {
+    background-color: white;
+    border: 1px solid #d9d9d9;
+    color: #595959;
+  }
+  
+  .secondary-btn:hover {
+    border-color: #40a9ff;
+    color: #40a9ff;
+  }
+  
+  .primary-btn:disabled, .secondary-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  
+  /* Message styling */
+  .error-message, .success-message {
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 16px;
+    font-size: 0.9rem;
+  }
+  
+  .error-message {
+    background-color: #fff2f0;
+    border: 1px solid #ffccc7;
+    color: #cf1322;
+  }
+  
+  .success-message {
+    background-color: #f6ffed;
+    border: 1px solid #b7eb8f;
+    color: #52c41a;
+  }
+
+  .delete-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1100; /* Higher than the edit modal */
+  }
+  
+  .delete-confirmation-modal {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    max-width: 500px;
+    width: 100%;
+  }
+  
+  .delete-confirmation-modal h3 {
+    color: #d32f2f;
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 1.5rem;
+  }
+  
+  .delete-confirmation-modal p {
+    margin-bottom: 10px;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+  
+  .delete-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+    gap: 10px;
+  }
+  
+  .cancel-btn {
+    background-color: #f5f5f5;
+    color: #333;
+    border: 1px solid #ddd;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s;
+  }
+  
+  .cancel-btn:hover {
+    background-color: #e5e5e5;
+  }
+  
+  .delete-confirm-btn {
+    background-color: #d32f2f;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s;
+  }
+  
+  .delete-confirm-btn:hover {
+    background-color: #b71c1c;
+  }
