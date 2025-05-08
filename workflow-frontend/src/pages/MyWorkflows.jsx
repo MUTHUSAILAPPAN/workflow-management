@@ -2,11 +2,10 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import WorkflowService from '../services/WorkflowService';
 import AuthService from '../services/authService';
-import UserService from '../services/UserService'; // Add this import
+import UserService from '../services/UserService';
 import WorkflowDetailModal from './WorkflowDetailModal';
 import WorkflowEditModal from './WorkflowEditModal';
 import './page styles/MyWorkflows.css';
-import CreateWorkflow from './CreateWorkflow';
 
 const MyWorkflows = () => {
   const [assignedWorkflows, setAssignedWorkflows] = useState([]);
@@ -17,7 +16,7 @@ const MyWorkflows = () => {
   const [currentUser, setCurrentUser] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
-  const [users, setUsers] = useState([]); // State to store users for EditModal
+  const [users, setUsers] = useState([]);
   
   // Modal state
   const [selectedWorkflow, setSelectedWorkflow] = useState(null);
@@ -34,8 +33,7 @@ const MyWorkflows = () => {
         setUsers(fetchedUsers || []);
       } catch (err) {
         console.error('Failed to load users:', err);
-        // Don't set error state since this is not critical for the main page functionality
-        setUsers([]); // Set empty array as fallback
+        setUsers([]);
       }
     };
     
@@ -54,16 +52,13 @@ const MyWorkflows = () => {
       }
       setCurrentUser(user);
   
-      // Build proper query parameters
-      const params = new URLSearchParams();
-      if (statusFilter) params.append('status', statusFilter.toUpperCase());
+      // Create a query string for the status filter
+      const queryParams = statusFilter ? `?status=${statusFilter}` : '';
       
-      // For assigned workflows
-      const assignedResult = await WorkflowService.getMyAssignedWorkflows(params);
+      const assignedResult = await WorkflowService.getMyAssignedWorkflows(queryParams);
       setAssignedWorkflows(assignedResult || []);
   
-      // For created workflows
-      const createdResult = await WorkflowService.getMyCreatedWorkflows(params);
+      const createdResult = await WorkflowService.getMyCreatedWorkflows(queryParams);
       setCreatedWorkflows(createdResult || []);
     } catch (err) {
       console.error('Error fetching workflows:', err);
@@ -88,12 +83,12 @@ const MyWorkflows = () => {
     setSearchTerm(e.target.value);
   };
 
-    // Navigate to workflow creation page
-    const handleCreateWorkflow = () => {
-      navigate('/workflows/create');
-    };
+  // Navigate to workflow creation page
+  const handleCreateWorkflow = () => {
+    navigate('/workflows/create');
+  };
 
-  // Handle status update - Modified to use direct status update endpoint
+  // Handle status update
   const handleStatusUpdate = async (workflowId, newStatus) => {
     try {
       // Get the full workflow before updating
@@ -105,7 +100,6 @@ const MyWorkflows = () => {
         status: newStatus
       };
       
-      // Use updateWorkflow instead of updateWorkflowStatus
       await WorkflowService.updateWorkflow(workflowId, updatedWorkflow);
       
       // Refresh workflows after successful update
@@ -142,35 +136,35 @@ const MyWorkflows = () => {
     setShowEditModal(false);
   };
 
-// And update the handleWorkflowUpdate function to ensure both name and ID are preserved:
-const handleWorkflowUpdate = (updatedWorkflow) => {
-  // Make sure the assignedToName is preserved when updating the lists
-  const completeWorkflow = {
-    ...updatedWorkflow,
-    // If assignedToName is not in the updated workflow but exists in the original one, keep it
-    assignedToName: updatedWorkflow.assignedToName || 
-      (createdWorkflows.find(w => w.id === updatedWorkflow.id)?.assignedToName ||
-       assignedWorkflows.find(w => w.id === updatedWorkflow.id)?.assignedToName)
+  // Handle workflow update
+  const handleWorkflowUpdate = (updatedWorkflow) => {
+    // Make sure the assignedToName is preserved when updating the lists
+    const completeWorkflow = {
+      ...updatedWorkflow,
+      // If assignedToName is not in the updated workflow but exists in the original one, keep it
+      assignedToName: updatedWorkflow.assignedToName || 
+        (createdWorkflows.find(w => w.id === updatedWorkflow.id)?.assignedToName ||
+         assignedWorkflows.find(w => w.id === updatedWorkflow.id)?.assignedToName)
+    };
+    
+    // Update both workflow lists if the workflow exists in them
+    setCreatedWorkflows(createdWorkflows.map(wf => 
+      wf.id === updatedWorkflow.id ? completeWorkflow : wf
+    ));
+    setAssignedWorkflows(assignedWorkflows.map(wf => 
+      wf.id === updatedWorkflow.id ? completeWorkflow : wf
+    ));
+    setShowEditModal(false);
+    // Also refresh data from API to ensure consistency
+    fetchWorkflows();
   };
-  
-  // Update both workflow lists if the workflow exists in them
-  setCreatedWorkflows(createdWorkflows.map(wf => 
-    wf.id === updatedWorkflow.id ? completeWorkflow : wf
-  ));
-  setAssignedWorkflows(assignedWorkflows.map(wf => 
-    wf.id === updatedWorkflow.id ? completeWorkflow : wf
-  ));
-  setShowEditModal(false);
-  // Also refresh data from API to ensure consistency
-  fetchWorkflows();
-};
 
   // Refresh data
   const handleRefresh = () => {
     fetchWorkflows();
   };
 
-  // Apply filters to workflows
+  // Apply search filter to workflows
   const getFilteredWorkflows = (workflows) => {
     return workflows.filter(workflow => {
       const matchesSearch = searchTerm === '' || 
@@ -368,7 +362,7 @@ const handleWorkflowUpdate = (updatedWorkflow) => {
         />
       )}
       
-      {/* Workflow Edit Modal - Using your existing modal with required props */}
+      {/* Workflow Edit Modal */}
       {showEditModal && selectedWorkflow && (
         <WorkflowEditModal
           workflow={selectedWorkflow}
@@ -376,7 +370,7 @@ const handleWorkflowUpdate = (updatedWorkflow) => {
           onUpdate={handleWorkflowUpdate}
           onDelete={handleWorkflowDeleted}
           currentUser={currentUser}
-          users={users} // Pass the users array from state
+          users={users}
           canDelete={canDeleteWorkflow(selectedWorkflow)}
         />
       )}

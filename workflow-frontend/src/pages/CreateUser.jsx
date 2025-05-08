@@ -16,6 +16,7 @@ const CreateUser = () => {
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+  const [createdUser, setCreatedUser] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -96,7 +97,8 @@ const CreateUser = () => {
         role: formData.role
       };
       
-      await UserService.createUser(userToCreate);
+      const response = await UserService.createUser(userToCreate);
+      setCreatedUser(response.data); // Store the created user data
       
       setSuccess(true);
       setTimeout(() => {
@@ -137,7 +139,10 @@ const CreateUser = () => {
       
       {success ? (
         <div className="alert alert-success">
-          <p>User created successfully! Redirecting...</p>
+          <p>
+            User <strong>{createdUser?.name}</strong> ({createdUser?.email}) created successfully by {currentUser?.email}!
+            {' '}Redirecting...
+          </p>
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="create-user-form">
@@ -199,6 +204,12 @@ const CreateUser = () => {
             </select>
             {errors.role && <span className="error-text">{errors.role}</span>}
           </div>
+
+          {currentUser && (
+            <div className="form-info">
+              <p>This user will be created with your email ({currentUser.email}) as the creator.</p>
+            </div>
+          )}
           
           <div className="form-actions">
             <button

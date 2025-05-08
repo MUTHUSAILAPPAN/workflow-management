@@ -94,6 +94,15 @@ const WorkflowEditModal = ({ workflow, onClose, onUpdate, onDelete, currentUser,
     
     // For admin or creator, allow all fields to be updated
     if (hasFullEditPermission) {
+      // Format the date properly for the backend
+      let formattedDueDate = null;
+      if (dueDate) {
+        // Create a date object and set it to noon to avoid timezone issues
+        const dueDateObj = new Date(dueDate);
+        dueDateObj.setHours(12, 0, 0, 0);
+        formattedDueDate = dueDateObj.toISOString();
+      }
+      
       updatedWorkflow = {
         ...updatedWorkflow,
         title: title.trim(),
@@ -102,8 +111,13 @@ const WorkflowEditModal = ({ workflow, onClose, onUpdate, onDelete, currentUser,
         assignedToName: assignedToName, // Include the name for UI display
         assignedToRole,
         status,
-        dueDate: dueDate || null
+        dueDate: formattedDueDate
       };
+      
+      console.debug('[WorkflowEditModal] Submitting due date:', {
+        originalDate: dueDate,
+        formattedDate: formattedDueDate
+      });
     } else {
       // For assignee, only allow status update
       updatedWorkflow = {
@@ -116,6 +130,7 @@ const WorkflowEditModal = ({ workflow, onClose, onUpdate, onDelete, currentUser,
       setLoading(true);
       setError(null);
       
+      console.debug('[WorkflowEditModal] Updating workflow with data:', updatedWorkflow);
       const result = await WorkflowService.updateWorkflow(workflow.id, updatedWorkflow);
       console.log('Workflow updated:', result);
       

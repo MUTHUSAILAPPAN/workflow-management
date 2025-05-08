@@ -32,7 +32,8 @@ public class UserService {
         }
 
         user.setCreatedAt(LocalDateTime.now());
-        user.setCreatedBy(creator.getId());
+        // Set creator's email instead of ID
+        user.setCreatedBy(creator.getEmail());
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }

@@ -25,6 +25,12 @@ api.interceptors.request.use(
 
     console.debug('[Request Interceptor] Adding authorization token');
     config.headers.Authorization = `Bearer ${token}`;
+    
+    // Log the request data for debugging
+    if (config.data) {
+      console.debug('[Request Interceptor] Request payload:', config.data);
+    }
+    
     return config;
   },
   (error) => {
@@ -182,6 +188,24 @@ class WorkflowService {
       // Make a copy to avoid modifying the original data
       const workflowToUpdate = { ...workflowData };
       
+      // Ensure dueDate is properly formatted
+      if (workflowToUpdate.dueDate) {
+        console.debug(`[WorkflowService] Processing dueDate: ${workflowToUpdate.dueDate}`);
+        
+        // If it's already an ISO string, keep it as is
+        if (typeof workflowToUpdate.dueDate === 'string' && 
+            workflowToUpdate.dueDate.match(/^\d{4}-\d{2}-\d{2}T/)) {
+          console.debug('[WorkflowService] dueDate is already in ISO format');
+        } 
+        // If it's just a date string (YYYY-MM-DD), convert to ISO
+        else if (typeof workflowToUpdate.dueDate === 'string') {
+          const dateObj = new Date(workflowToUpdate.dueDate);
+          dateObj.setHours(12, 0, 0, 0); // Set to noon to avoid timezone issues
+          workflowToUpdate.dueDate = dateObj.toISOString();
+          console.debug(`[WorkflowService] Converted dueDate to ISO: ${workflowToUpdate.dueDate}`);
+        }
+      }
+      
       // Ensure assignedTo contains the ID/email, not the name
       if (workflowToUpdate.assignedTo) {
         // assignedTo should already be the ID/email in our updated code,
@@ -231,7 +255,14 @@ class WorkflowService {
     try {
       console.debug('[WorkflowService] Fetching workflows assigned to current user with filters:', filters);
       
-      // Handle filters if provided
+      // Check if filters is a string (query string)
+      if (typeof filters === 'string') {
+        console.debug(`[WorkflowService] Using query string directly: ${filters}`);
+        const response = await api.get(`/workflows/me/assigned${filters}`);
+        return response.data;
+      }
+      
+      // Otherwise handle as object or URLSearchParams
       let params = {};
       
       // Convert URLSearchParams to object if needed
@@ -248,14 +279,7 @@ class WorkflowService {
       
       console.debug('[WorkflowService] My assigned workflows - Final params:', params);
       
-      // Use special endpoint when no filters, otherwise use main endpoint with assigneeId=current
-      let response;
-      if (Object.keys(params).length === 0) {
-        response = await api.get('/workflows/me/assigned');
-      } else {
-        // For filtered requests, use the filtered endpoint with query params
-        response = await api.get('/workflows/me/assigned', { params });
-      }
+      let response = await api.get('/workflows/me/assigned', { params });
       
       console.debug('[WorkflowService] Successfully fetched assigned workflows:', {
         count: response.data.length,
@@ -278,7 +302,14 @@ class WorkflowService {
     try {
       console.debug('[WorkflowService] Fetching workflows created by current user with filters:', filters);
       
-      // Handle filters if provided
+      // Check if filters is a string (query string)
+      if (typeof filters === 'string') {
+        console.debug(`[WorkflowService] Using query string directly: ${filters}`);
+        const response = await api.get(`/workflows/me/created${filters}`);
+        return response.data;
+      }
+      
+      // Otherwise handle as object or URLSearchParams
       let params = {};
       
       // Convert URLSearchParams to object if needed
@@ -295,14 +326,7 @@ class WorkflowService {
       
       console.debug('[WorkflowService] My created workflows - Final params:', params);
       
-      // Use special endpoint when no filters, otherwise use main endpoint with createdBy=current
-      let response;
-      if (Object.keys(params).length === 0) {
-        response = await api.get('/workflows/me/created');
-      } else {
-        // For filtered requests, use the filtered endpoint with query params
-        response = await api.get('/workflows/me/created', { params });
-      }
+      let response = await api.get('/workflows/me/created', { params });
       
       console.debug('[WorkflowService] Successfully fetched created workflows:', {
         count: response.data.length,
@@ -315,6 +339,7 @@ class WorkflowService {
       throw error;
     }
   }
+  
 
   /**
    * Update workflow status - DEPRECATED, use updateWorkflow instead
